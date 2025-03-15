@@ -4,19 +4,34 @@ import { ChatInterface } from './components/ChatInterface';
 
 // Initialize the app
 function initApp() {
-  // Create app container if it doesn't exist
-  if (!document.getElementById('app')) {
-    const appDiv = document.createElement('div');
-    appDiv.id = 'app';
-    document.body.appendChild(appDiv);
+  console.log('Initializing application...');
+  
+  // Get existing app div from index.html
+  const appDiv = document.getElementById('app');
+  
+  if (!appDiv) {
+    console.error('App container not found');
+    return;
   }
   
-  // Initialize 3D viewer first
-  const modelViewer = new ModelViewer(document.body);
+  // Create a container for 3D view
+  const modelContainer = document.createElement('div');
+  modelContainer.id = 'model-container';
+  modelContainer.className = 'model-container';
+  appDiv.appendChild(modelContainer);
   
-  // Then create chat interface with reference to the app element
-  const appContainer = document.getElementById('app')!;
-  const chatInterface = new ChatInterface(appContainer, modelViewer);
+  // Create a container for chat interface
+  const chatContainer = document.createElement('div');
+  chatContainer.id = 'chat-container';
+  chatContainer.className = 'chat-container';
+  appDiv.appendChild(chatContainer);
+  
+  // Initialize 3D viewer
+  const modelViewer = new ModelViewer(modelContainer);
+  
+  // Initialize chat interface
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const chatInterface = new ChatInterface(chatContainer, modelViewer);
   
   console.log('Application initialized');
 }

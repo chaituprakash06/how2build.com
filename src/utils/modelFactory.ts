@@ -1,7 +1,7 @@
 // src/utils/modelFactory.ts
 import * as THREE from 'three';
 
-export function createModelFromDescription(description: any) {
+export function createModelFromDescription(description: any): THREE.Group {
   const group = new THREE.Group();
   
   // Extract object type and properties from the LLM response
@@ -26,7 +26,7 @@ export function createModelFromDescription(description: any) {
   return group;
 }
 
-function createBaseGeometry(type, dimensions) {
+function createBaseGeometry(type: string, dimensions: any): THREE.BufferGeometry {
   // Default dimensions
   const size = dimensions || { width: 1, height: 1, depth: 1, radius: 0.5 };
   
@@ -43,9 +43,11 @@ function createBaseGeometry(type, dimensions) {
   }
 }
 
-function addPartToModel(group, part) {
+function addPartToModel(group: THREE.Group, part: any): void {
   // Create geometries based on part descriptions
-  let geometry, material, mesh;
+  let geometry: THREE.BufferGeometry;
+  let material: THREE.Material;
+  let mesh: THREE.Mesh;
   
   switch(part.type) {
     case 'handle':

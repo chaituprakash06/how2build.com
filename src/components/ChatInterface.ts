@@ -1,5 +1,12 @@
 import { ModelViewer } from './ModelViewer';
-import { sendChatRequest } from '../services/api';
+
+// Define ChatResponse interface if api service is missing
+interface ChatResponse {
+  message: string;
+  modelData?: any;
+  steps?: any[];
+  error?: boolean;
+}
 
 export class ChatInterface {
   private container: HTMLElement;
@@ -8,12 +15,12 @@ export class ChatInterface {
   private currentStep: number = 0;
   private steps: any[] = [];
   
-  // Add missing property declarations
+  // Add missing property declarations with correct types
   private chatMessages: HTMLElement;
   private messageInput: HTMLInputElement;
   private stepsContainer: HTMLElement;
-  private prevButton: HTMLElement | null = null;
-  private nextButton: HTMLElement | null = null;
+  private prevButton: HTMLButtonElement | null = null;
+  private nextButton: HTMLButtonElement | null = null;
   
   constructor(container: HTMLElement, modelViewer: ModelViewer) {
     this.container = container;
@@ -144,8 +151,23 @@ export class ChatInterface {
     if (element) element.remove();
   }
   
-  private async callChatApi(message: string): Promise<any> {
-    return await sendChatRequest(message);
+  private async callChatApi(message: string): Promise<ChatResponse> {
+    // Simple implementation if API service is missing
+    console.log('Calling chat API endpoint');
+    
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ message }),
+    });
+    
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}`);
+    }
+    
+    return await response.json();
   }
   
   private updateRepairSteps(steps: any[]): void {
@@ -171,8 +193,8 @@ export class ChatInterface {
         
         // Wait for DOM to update before getting button references
         setTimeout(() => {
-          this.prevButton = document.getElementById('prev-btn');
-          this.nextButton = document.getElementById('next-btn');
+          this.prevButton = document.getElementById('prev-btn') as HTMLButtonElement;
+          this.nextButton = document.getElementById('next-btn') as HTMLButtonElement;
           
           if (this.prevButton) {
             this.prevButton.addEventListener('click', () => {
