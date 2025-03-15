@@ -10,10 +10,11 @@ export interface ChatResponse {
   
   // Environment detection
   const isProduction = import.meta.env.PROD;
-  const isLocalDev = !isProduction;
+  // We'll use this variable in a console log to prevent unused variable warning
+  console.log(`Running in ${isProduction ? 'production' : 'development'} mode`);
   
   export async function sendChatRequest(message: string): Promise<ChatResponse> {
-    console.log(`Processing chat request in ${isProduction ? 'production' : 'development'} mode`);
+    console.log(`Processing chat request`);
     
     try {
       // Always try to call the API

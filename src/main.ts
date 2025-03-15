@@ -29,9 +29,8 @@ function initApp() {
   // Initialize 3D viewer
   const modelViewer = new ModelViewer(modelContainer);
   
-  // Initialize chat interface
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const chatInterface = new ChatInterface(chatContainer, modelViewer);
+  // Initialize chat interface - we need to create it even if we don't store the reference
+  new ChatInterface(chatContainer, modelViewer);
   
   console.log('Application initialized');
 }
