@@ -1,0 +1,95 @@
+:root {
+  font-family: Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #333;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+#container {
+  width: 100vw;
+  height: 100vh;
+}
+
+/* Canvas styling - Three.js will create this */
+canvas {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+#info-panel {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 300px;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 20px;
+  box-sizing: border-box;
+  z-index: 10; /* Higher z-index than canvas */
+  overflow-y: auto;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+}
+
+h1 {
+  color: #003366;
+  margin-top: 0;
+  font-size: 24px;
+}
+
+/* Steps */
+#steps {
+  margin-bottom: 30px;
+}
+
+.step {
+  padding: 15px;
+  margin-bottom: 10px;
+  background-color: #f5f5f5;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.step:hover {
+  background-color: #e0e0e0;
+}
+
+.step.active {
+  background-color: #003366;
+  color: white;
+}
+
+/* Button container */
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #0056b3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+button:hover:not(:disabled) {
+  background-color: #003d82;
+}
+
+button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
