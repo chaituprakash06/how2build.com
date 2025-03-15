@@ -14,6 +14,9 @@ function initApp() {
     return;
   }
   
+  // Set app layout styles
+  appDiv.className = 'app-container';
+  
   // Create a container for 3D view
   const modelContainer = document.createElement('div');
   modelContainer.id = 'model-container';

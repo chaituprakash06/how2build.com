@@ -23,6 +23,7 @@ export class ChatInterface {
   private nextButton: HTMLButtonElement | null = null;
   
   constructor(container: HTMLElement, modelViewer: ModelViewer) {
+    console.log('Initializing ChatInterface');
     this.container = container;
     this.modelViewer = modelViewer;
     
@@ -49,6 +50,7 @@ export class ChatInterface {
     
     // Important: Wait for DOM to update before getting references
     setTimeout(() => {
+      console.log('Setting up chat elements');
       // Cache DOM references
       const chatMessagesElement = document.getElementById('chat-messages');
       const messageInputElement = document.getElementById('message-input');
@@ -69,20 +71,27 @@ export class ChatInterface {
       const sendButton = document.getElementById('send-btn');
       if (sendButton) {
         sendButton.addEventListener('click', () => this.sendMessage());
+        console.log('Send button event listener added');
+      } else {
+        console.error('Send button not found');
       }
       
       if (this.messageInput) {
         this.messageInput.addEventListener('keypress', (e) => {
           if (e.key === 'Enter') this.sendMessage();
         });
+        console.log('Message input event listener added');
+      } else {
+        console.error('Message input not found');
       }
       
       // Add welcome message
       this.addMessage('assistant', 'Hello! What home repair issue can I help you with today?');
-    }, 0);
+    }, 100); // Increased timeout to ensure DOM is ready
   }
   
   private async sendMessage(): Promise<void> {
+    console.log('Send message triggered');
     if (!this.messageInput) {
       console.error('Message input element not found');
       return;
@@ -90,6 +99,8 @@ export class ChatInterface {
     
     const message = this.messageInput.value.trim();
     if (!message) return;
+    
+    console.log('Sending message:', message);
     
     // Add user message to chat
     this.addMessage('user', message);
@@ -116,15 +127,17 @@ export class ChatInterface {
       
       // Update model if model data is provided
       if (response.modelData) {
+        console.log('Loading model data');
         this.modelViewer.loadModel(response.modelData);
       }
       
       // Update repair steps if provided
       if (response.steps && response.steps.length) {
+        console.log('Updating repair steps:', response.steps.length, 'steps');
         this.updateRepairSteps(response.steps);
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error sending message:', error);
       this.removeMessage(loadingId);
       this.addMessage('assistant', 'Sorry, I had trouble processing that. Please try again.');
     }
@@ -155,19 +168,24 @@ export class ChatInterface {
     // Simple implementation if API service is missing
     console.log('Calling chat API endpoint');
     
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ message }),
-    });
-    
-    if (!response.ok) {
-      throw new Error(`API request failed with status ${response.status}`);
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('API request error:', error);
+      throw error;
     }
-    
-    return await response.json();
   }
   
   private updateRepairSteps(steps: any[]): void {
@@ -175,6 +193,7 @@ export class ChatInterface {
     
     // Create steps container if it doesn't exist
     if (!this.stepsContainer || !this.stepsContainer.parentElement) {
+      console.log('Creating steps container');
       this.stepsContainer = document.createElement('div');
       this.stepsContainer.id = 'steps-container';
       this.stepsContainer.className = 'steps-container';
@@ -193,6 +212,7 @@ export class ChatInterface {
         
         // Wait for DOM to update before getting button references
         setTimeout(() => {
+          console.log('Setting up navigation buttons');
           this.prevButton = document.getElementById('prev-btn') as HTMLButtonElement;
           this.nextButton = document.getElementById('next-btn') as HTMLButtonElement;
           
@@ -200,17 +220,21 @@ export class ChatInterface {
             this.prevButton.addEventListener('click', () => {
               if (this.currentStep > 0) this.setActiveStep(this.currentStep - 1);
             });
+          } else {
+            console.error('Previous button not found');
           }
           
           if (this.nextButton) {
             this.nextButton.addEventListener('click', () => {
               if (this.currentStep < this.steps.length - 1) this.setActiveStep(this.currentStep + 1);
             });
+          } else {
+            console.error('Next button not found');
           }
           
           // Now that we have buttons set up, add the steps
           this.populateSteps();
-        }, 0);
+        }, 100);
       } else {
         console.error('Chat panel not found');
       }
@@ -221,6 +245,7 @@ export class ChatInterface {
   }
   
   private populateSteps(): void {
+    console.log('Populating steps');
     if (!this.stepsContainer) {
       console.error('Steps container not found');
       return;
@@ -250,6 +275,7 @@ export class ChatInterface {
   }
   
   private setActiveStep(step: number): void {
+    console.log('Setting active step:', step);
     if (!this.steps || !this.steps[step]) return;
     
     // Update UI
@@ -266,6 +292,7 @@ export class ChatInterface {
     // Update model state
     if (this.steps[step].modelState && this.modelViewer) {
       try {
+        console.log('Updating model state for step:', step);
         this.modelViewer.updateModelState(this.steps[step].modelState);
       } catch (error) {
         console.error('Error updating model state:', error);

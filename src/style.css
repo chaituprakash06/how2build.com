@@ -5,57 +5,151 @@
   color: #333;
 }
 
-body {
+html, body {
   margin: 0;
   padding: 0;
   overflow: hidden;
-}
-
-#container {
   width: 100vw;
   height: 100vh;
 }
 
-/* Canvas styling - Three.js will create this */
-canvas {
-  position: fixed !important;
-  top: 0;
-  left: 0;
-  z-index: 1;
+#app {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  position: relative;
 }
 
-#info-panel {
-  position: fixed;
-  right: 0;
-  top: 0;
-  width: 300px;
+.app-container {
+  display: flex;
+  width: 100%;
   height: 100%;
+}
+
+/* 3D Model Container */
+.model-container {
+  flex: 1;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Canvas styling - Three.js will create this */
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Chat Interface */
+.chat-container {
+  width: 350px;
+  height: 100%;
+  position: relative;
+  z-index: 10;
   background-color: rgba(255, 255, 255, 0.9);
-  padding: 20px;
-  box-sizing: border-box;
-  z-index: 10; /* Higher z-index than canvas */
-  overflow-y: auto;
   box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chat-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 15px;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 h1 {
   color: #003366;
   margin-top: 0;
   font-size: 24px;
+  margin-bottom: 15px;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: #f5f5f5;
+  border-radius: 5px;
+}
+
+.message {
+  margin-bottom: 10px;
+  padding: 8px 12px;
+  border-radius: 5px;
+  max-width: 85%;
+}
+
+.user-message {
+  background-color: #0056b3;
+  color: white;
+  align-self: flex-end;
+  margin-left: auto;
+}
+
+.assistant-message {
+  background-color: #e0e0e0;
+  color: #333;
+  align-self: flex-start;
+}
+
+.loading-message {
+  opacity: 0.7;
+}
+
+.chat-input {
+  display: flex;
+  margin-top: 10px;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px 0 0 4px;
+  font-size: 14px;
+}
+
+.chat-input button {
+  padding: 10px 20px;
+  background-color: #0056b3;
+  color: white;
+  border: none;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+.chat-input button:hover {
+  background-color: #003d82;
 }
 
 /* Steps */
-#steps {
-  margin-bottom: 30px;
+.steps-container {
+  margin-top: 20px;
+  margin-bottom: 15px;
+  overflow-y: auto;
+  max-height: 200px;
 }
 
 .step {
-  padding: 15px;
-  margin-bottom: 10px;
+  padding: 10px;
+  margin-bottom: 8px;
   background-color: #f5f5f5;
   border-radius: 5px;
   cursor: pointer;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
 }
 
 .step:hover {
@@ -67,15 +161,48 @@ h1 {
   color: white;
 }
 
-/* Button container */
-.button-container {
+.step-number {
   display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
+  align-items: center;
+  justify-content: center;
+  width: 25px;
+  height: 25px;
+  background-color: #0056b3;
+  color: white;
+  border-radius: 50%;
+  margin-right: 10px;
+  font-weight: bold;
+  flex-shrink: 0;
 }
 
-button {
-  padding: 10px 20px;
+.step.active .step-number {
+  background-color: white;
+  color: #003366;
+}
+
+.step-content {
+  flex: 1;
+}
+
+.step-content h3 {
+  margin: 0 0 5px 0;
+  font-size: 16px;
+}
+
+.step-content p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Button container */
+.step-navigation {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.step-navigation button {
+  padding: 8px 15px;
   background-color: #0056b3;
   color: white;
   border: none;
@@ -85,11 +212,28 @@ button {
   transition: background-color 0.2s ease;
 }
 
-button:hover:not(:disabled) {
+.step-navigation button:hover:not(:disabled) {
   background-color: #003d82;
 }
 
-button:disabled {
+.step-navigation button:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column;
+  }
+
+  .model-container {
+    flex: 0 0 60%;
+    width: 100%;
+  }
+
+  .chat-container {
+    width: 100%;
+    flex: 0 0 40%;
+  }
 }
