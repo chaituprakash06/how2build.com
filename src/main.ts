@@ -1,6 +1,10 @@
 import './style.css';
 import { ModelViewer } from './components/ModelViewer';
 import { ChatInterface } from './components/ChatInterface';
+import { inject } from '@vercel/analytics';
+
+// Initialize Vercel Analytics
+inject();
 
 // Initialize the app
 function initApp() {

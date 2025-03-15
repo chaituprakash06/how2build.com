@@ -36,7 +36,7 @@ export default async function handler(req, res) {
     // For now, let's temporarily use mock data for common terms to debug
     const lowerMessage = message.toLowerCase();
     if (lowerMessage.includes('tap') || lowerMessage.includes('faucet')) {
-      console.log('Using mock tap response for debugging');
+      console.log('Using mock response for debugging');
       return res.status(200).json(mockTapResponse());
     } else if (lowerMessage.includes('sink') || lowerMessage.includes('drain')) {
       console.log('Using mock sink response for debugging');
