@@ -1,6 +1,6 @@
-// src/components/ModelViewer.ts
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+// Fix import for OrbitControls
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 export class ModelViewer {
   private scene: THREE.Scene;
@@ -128,34 +128,63 @@ export class ModelViewer {
     }
     
     // Handle part visibility and highlighting
-    this.currentModel.traverse(child => {
-      if (child instanceof THREE.Mesh && child.userData.partName) {
+    this.currentModel.traverse((child: THREE.Object3D) => {
+      if (!(child instanceof THREE.Mesh) || !child.userData.partName) {
+        return;
+      }
+      
+      try {
         // Reset visibility
         child.visible = true;
         
         // Hide parts if specified
-        if (state.hideParts && state.hideParts.includes(child.userData.partName)) {
+        if (state.hideParts && Array.isArray(state.hideParts) && 
+            state.hideParts.includes(child.userData.partName)) {
           child.visible = false;
         }
         
-        // Reset material
+        // Reset material if we have an original stored
         if (child.userData.originalMaterial) {
-          child.material = child.userData.originalMaterial.clone();
+          try {
+            // Make sure we get a fresh clone of the original
+            child.material = child.userData.originalMaterial.clone();
+          } catch (err) {
+            console.warn('Error cloning original material:', err);
+          }
         }
         
         // Highlight parts if specified
-        if (state.highlightParts && state.highlightParts.includes(child.userData.partName)) {
-          // Store original material if needed
+        if (state.highlightParts && Array.isArray(state.highlightParts) && 
+            state.highlightParts.includes(child.userData.partName)) {
+          
+          // Store original material if needed (only once)
           if (!child.userData.originalMaterial) {
-            child.userData.originalMaterial = child.material.clone();
+            try {
+              child.userData.originalMaterial = (child.material as THREE.Material).clone();
+            } catch (err) {
+              console.warn('Error storing original material:', err);
+              // Continue anyway, we'll create a new material
+            }
           }
           
-          // Create highlighted material
-          const highlightMaterial = child.material.clone();
-          highlightMaterial.emissive.set(0x555500);
-          highlightMaterial.emissiveIntensity = 0.5;
-          child.material = highlightMaterial;
+          try {
+            // Create a new material for highlighting
+            const highlightMaterial = new THREE.MeshStandardMaterial({
+              color: (child.material as THREE.MeshStandardMaterial).color,
+              metalness: (child.material as THREE.MeshStandardMaterial).metalness || 0.7,
+              roughness: (child.material as THREE.MeshStandardMaterial).roughness || 0.3,
+              emissive: new THREE.Color(0x555500),
+              emissiveIntensity: 0.5
+            });
+            
+            // Apply the highlight material
+            child.material = highlightMaterial;
+          } catch (err) {
+            console.error('Error applying highlight material:', err);
+          }
         }
+      } catch (err) {
+        console.error('Error processing mesh:', err);
       }
     });
   }
