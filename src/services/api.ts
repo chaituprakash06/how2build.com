@@ -8,9 +8,8 @@ export interface ChatResponse {
     error?: boolean;
   }
   
-  // Environment detection
-  const isProduction = import.meta.env.PROD;
-  // We'll use this variable in a console log to prevent unused variable warning
+  // Environment detection - fixed to avoid TypeScript error
+  const isProduction = typeof import.meta.env !== 'undefined' ? import.meta.env.PROD : true;
   console.log(`Running in ${isProduction ? 'production' : 'development'} mode`);
   
   export async function sendChatRequest(message: string): Promise<ChatResponse> {
@@ -32,26 +31,31 @@ export interface ChatResponse {
   
   // Function to call the actual API
   async function callChatApi(message: string): Promise<ChatResponse> {
+    // Simple implementation if API service is missing
     console.log('Calling chat API endpoint');
     
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ message }),
-    });
-    
-    if (!response.ok) {
-      throw new Error(`API request failed with status ${response.status}`);
+    try {
+      // Use the full URL to avoid relative path issues
+      const apiUrl = window.location.origin + '/api/chat';
+      console.log('API URL:', apiUrl);
+      
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message }),
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API error response:', response.status, errorText);
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('API request error:', error);
+      throw error;
     }
-    
-    const data = await response.json();
-    
-    // Check if the response contains an error
-    if (data.error) {
-      throw new Error(data.message || 'Unknown error from API');
-    }
-    
-    return data;
   }
