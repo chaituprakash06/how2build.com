@@ -8,10 +8,6 @@ export interface ChatResponse {
     error?: boolean;
   }
   
-  // Environment detection - fixed to avoid TypeScript error
-  const isProduction = typeof import.meta.env !== 'undefined' ? import.meta.env.PROD : true;
-  console.log(`Running in ${isProduction ? 'production' : 'development'} mode`);
-  
   export async function sendChatRequest(message: string): Promise<ChatResponse> {
     console.log(`Processing chat request`);
     
