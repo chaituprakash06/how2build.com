@@ -139,7 +139,23 @@ export class ChatInterface {
     } catch (error) {
       console.error('Error sending message:', error);
       this.removeMessage(loadingId);
-      this.addMessage('assistant', 'Sorry, I had trouble processing that. Please try again.');
+      
+      // More user-friendly error message
+      let errorMessage = 'Sorry, I encountered an error processing your request.';
+      
+      // Add more context if available
+      if (error instanceof Error) {
+        // Handle specific error types
+        if (error.message.includes('405')) {
+          errorMessage = 'Sorry, there seems to be an issue with the server configuration. Please make sure the API endpoint is properly set up.';
+        } else if (error.message.includes('404')) {
+          errorMessage = 'Sorry, the API endpoint could not be found. Please check your deployment configuration.';
+        } else if (error.message.includes('failed to fetch') || error.message.includes('network')) {
+          errorMessage = 'Sorry, there was a network error. Please check your internet connection and try again.';
+        }
+      }
+      
+      this.addMessage('assistant', errorMessage);
     }
   }
   
@@ -169,7 +185,11 @@ export class ChatInterface {
     console.log('Calling chat API endpoint');
     
     try {
-      const response = await fetch('/api/chat', {
+      // Use the full URL to avoid relative path issues
+      const apiUrl = window.location.origin + '/api/chat';
+      console.log('API URL:', apiUrl);
+      
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -178,6 +198,8 @@ export class ChatInterface {
       });
       
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API error response:', response.status, errorText);
         throw new Error(`API request failed with status ${response.status}`);
       }
       
@@ -187,6 +209,8 @@ export class ChatInterface {
       throw error;
     }
   }
+  
+  // Rest of the file remains the same...
   
   private updateRepairSteps(steps: any[]): void {
     this.steps = steps;
